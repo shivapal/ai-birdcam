@@ -70,7 +70,5 @@ bash birdcam/install_requirements.sh
 
 #setup autorun that fires scripts
 #write a bash script that takes pictures every n seconds
-#write a python script that classifies images every n seconds
-
-#include some capability to stream photos/videos for diagnostic
+#copy files to aws on success
 #also log info on success in csv for future training

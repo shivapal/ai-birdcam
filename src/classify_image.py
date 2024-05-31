@@ -30,7 +30,10 @@ python3 examples/classify_image.py \
 """
 
 import argparse
+import logging
+import threading
 import time
+import sched
 
 import numpy as np
 from PIL import Image
@@ -65,7 +68,19 @@ def main():
     parser.add_argument(
         '-s', '--input_std', type=float, default=128.0,
         help='STD value for input normalization')
+    #TODO: incorporate these args
+
+    # parser.add_argument('--training', action='store_true',
+    #                     help='Training mode for image collection')
+    # parser.add_argument('--visit_interval', action='store', type=int, default=2,
+    #                     help='Minimum interval between bird visits')
     args = parser.parse_args()
+
+    #TODO: make logging work
+
+    # logging.basicConfig(filename='%s/results.log' % storage_dir,
+    #                     format='%(asctime)s-%(message)s',
+    #                     level=logging.DEBUG)
 
     labels = read_label_file(args.labels) if args.labels else {}
 
@@ -77,6 +92,29 @@ def main():
         raise ValueError('Only support uint8 input type.')
 
     size = common.input_size(interpreter)
+
+    my_scheduler = sched.scheduler(time.time, time.sleep)
+    my_scheduler.enter(10, 1, classify_image, (my_scheduler, args, size, interpreter, labels,))
+    my_scheduler.run()
+
+    #TODO: add back code for unique visits
+
+    # last_time = time.monotonic()
+    # last_results = [('label', 0)]
+    # visitors = []
+    #
+    # DURATION = args.visit_interval
+    # timer = False
+    #
+    # def timed_event():
+    #     nonlocal timer
+    #     timer = True
+    #     threading.Timer(DURATION, timed_event).start()
+    #
+    # timed_event()
+
+def classify_image(scheduler, args, size, interpreter, labels):
+    scheduler.enter(10, 1, classify_image, (scheduler, args, size, interpreter, labels,))
     image = Image.open(args.input).convert('RGB').resize(size, Image.LANCZOS)
 
     # Image data must go through two transforms before running inference:
@@ -120,7 +158,7 @@ def main():
     exitCode = 0
     if len(classes) == 0:
         exitCode = 1
-    sys.exit(exitCode)
+    #sys.exit(exitCode)
 
 
 if __name__ == '__main__':
