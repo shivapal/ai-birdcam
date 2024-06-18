@@ -30,10 +30,13 @@ python3 examples/classify_image.py \
 """
 
 import argparse
-#import logging
-#import threading
+import os
+# import logging
+# import threading
 import time
 import sched
+import boto3
+import datetime
 
 import numpy as np
 from PIL import Image
@@ -41,7 +44,9 @@ from pycoral.adapters import classify
 from pycoral.adapters import common
 from pycoral.utils.dataset import read_label_file
 from pycoral.utils.edgetpu import make_interpreter
-#import sys
+
+
+# import sys
 
 
 def main():
@@ -68,7 +73,7 @@ def main():
     parser.add_argument(
         '-s', '--input_std', type=float, default=128.0,
         help='STD value for input normalization')
-    #TODO: incorporate these args
+    # TODO: incorporate these args
 
     # parser.add_argument('--training', action='store_true',
     #                     help='Training mode for image collection')
@@ -76,12 +81,12 @@ def main():
     #                     help='Minimum interval between bird visits')
     args = parser.parse_args()
 
-    #TODO: make logging work
+    # TODO: make logging work
 
     # logging.basicConfig(filename='%s/results.log' % storage_dir,
     #                     format='%(asctime)s-%(message)s',
     #                     level=logging.DEBUG)
-
+    s3 = boto3.resource('s3')
     labels = read_label_file(args.labels) if args.labels else {}
 
     interpreter = make_interpreter(*args.model.split('@'))
@@ -94,10 +99,10 @@ def main():
     size = common.input_size(interpreter)
 
     my_scheduler = sched.scheduler(time.time, time.sleep)
-    my_scheduler.enter(10, 1, classify_image, (my_scheduler, args, size, interpreter, labels,))
+    my_scheduler.enter(10, 1, classify_image, (my_scheduler, args, size, interpreter, labels, s3,))
     my_scheduler.run()
 
-    #TODO: add back code for unique visits
+    # TODO: add back code for unique visits
 
     # last_time = time.monotonic()
     # last_results = [('label', 0)]
@@ -113,9 +118,9 @@ def main():
     #
     # timed_event()
 
-def classify_image(scheduler, args, size, interpreter, labels):
-    scheduler.enter(10, 1, classify_image, (scheduler, args, size, interpreter, labels,))
-    camera.capture(args.input)
+
+def classify_image(scheduler, args, size, interpreter, labels, s3):
+    scheduler.enter(10, 1, classify_image, (scheduler, args, size, interpreter, labels, s3,))
     image = Image.open(args.input).convert('RGB').resize(size, Image.LANCZOS)
 
     # Image data must go through two transforms before running inference:
@@ -156,10 +161,11 @@ def classify_image(scheduler, args, size, interpreter, labels):
     for c in classes:
         print('%s: %.5f' % (labels.get(c.id, c.id), c.score))
 
-    exitCode = 0
-    if len(classes) == 0:
-        exitCode = 1
-    #sys.exit(exitCode)
+    if len(classes) >= 1:
+        if labels.get(classes[0].id, classes[0].id) != 'background':
+            with open(args.input, 'rb') as data:
+                upload_file = 'birdPics/' + datetime.datetime.now().strftime("%H_%M_%S-%m_%d_%y") + 'bird_pic.jpg'
+                s3.Bucket('shivamainbucket').put_object(Key=upload_file, Body=data)
 
 
 if __name__ == '__main__':

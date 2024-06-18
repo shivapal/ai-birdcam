@@ -67,8 +67,9 @@ git clone https://github.com/LetsOKdo/pi-coral-ai-birdcam.git
 cd ~/pi-coral-ai-birdcam || echo "error making and entering directory" && exit 1
 bash birdcam/install_requirements.sh
 
+pip install boto3
+
 
 #setup autorun that fires scripts
-#write a bash script that takes pictures every n seconds
-#copy files to aws on success
 #also log info on success in csv for future training
+#implement some way to zoom (look at roi, region of interest in documentation), like --roi 0.5,0.5,0.5,0.5
