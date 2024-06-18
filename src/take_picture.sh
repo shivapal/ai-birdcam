@@ -7,7 +7,7 @@ FILE_NAME="$HOME_DIR""Pictures/""$DATE_TIME""_pic.jpg"
 echo $DATE_TIME
 echo $FILE_NAME
 
-#rpicam-still -o "$FILE_NAME"
+rpicam-still --timelapse 10000 -o "$FILE_NAME" &
 
 python3  "$PROJECT_DIR""classify_image.py"   --model "$PROJECT_DIR""mobilenet_v2_1.0_224_inat_bird_quant_edgetpu.tflite"    --labels "$PROJECT_DIR""inat_bird_labels.txt"   --input "$FILE_NAME" --threshold 0.5 &
 

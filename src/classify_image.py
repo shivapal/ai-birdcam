@@ -34,7 +34,6 @@ import argparse
 #import threading
 import time
 import sched
-import picamera
 
 import numpy as np
 from PIL import Image
@@ -76,7 +75,6 @@ def main():
     # parser.add_argument('--visit_interval', action='store', type=int, default=2,
     #                     help='Minimum interval between bird visits')
     args = parser.parse_args()
-    camera = PiCamera()
 
     #TODO: make logging work
 
@@ -96,7 +94,7 @@ def main():
     size = common.input_size(interpreter)
 
     my_scheduler = sched.scheduler(time.time, time.sleep)
-    my_scheduler.enter(10, 1, classify_image, (my_scheduler, args, size, interpreter, labels,camera,))
+    my_scheduler.enter(10, 1, classify_image, (my_scheduler, args, size, interpreter, labels,))
     my_scheduler.run()
 
     #TODO: add back code for unique visits
@@ -115,8 +113,8 @@ def main():
     #
     # timed_event()
 
-def classify_image(scheduler, args, size, interpreter, labels, camera):
-    scheduler.enter(10, 1, classify_image, (scheduler, args, size, interpreter, labels, camera))
+def classify_image(scheduler, args, size, interpreter, labels):
+    scheduler.enter(10, 1, classify_image, (scheduler, args, size, interpreter, labels,))
     camera.capture(args.input)
     image = Image.open(args.input).convert('RGB').resize(size, Image.LANCZOS)
 
