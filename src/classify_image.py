@@ -31,6 +31,7 @@ python3 examples/classify_image.py \
 
 import argparse
 import os
+import sys
 # import logging
 # import threading
 import time
@@ -73,6 +74,9 @@ def main():
     parser.add_argument(
         '-s', '--input_std', type=float, default=128.0,
         help='STD value for input normalization')
+    parser.add_argument(
+        '-r', '--run_mode', default='oneshot',
+        help='oneshot or autostart')
     # TODO: incorporate these args
 
     # parser.add_argument('--training', action='store_true',
@@ -120,7 +124,9 @@ def main():
 
 
 def classify_image(scheduler, args, size, interpreter, labels, s3):
-    scheduler.enter(10, 1, classify_image, (scheduler, args, size, interpreter, labels, s3,))
+    if args.run_mode == 'autostart':
+        scheduler.enter(10, 1, classify_image, (scheduler, args, size, interpreter, labels, s3,))
+
     image = Image.open(args.input).convert('RGB').resize(size, Image.LANCZOS)
 
     # Image data must go through two transforms before running inference:
@@ -166,6 +172,9 @@ def classify_image(scheduler, args, size, interpreter, labels, s3):
             with open(args.input, 'rb') as data:
                 upload_file = 'birdPics/' + datetime.datetime.now().strftime("%H_%M_%S-%m_%d_%y") + 'bird_pic.jpg'
                 s3.Bucket('shivamainbucket').put_object(Key=upload_file, Body=data)
+
+    if args.run_mode == 'oneshot':
+        sys.exit(0)
 
 
 if __name__ == '__main__':

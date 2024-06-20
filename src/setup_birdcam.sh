@@ -67,9 +67,21 @@ git clone https://github.com/LetsOKdo/pi-coral-ai-birdcam.git
 cd ~/pi-coral-ai-birdcam || echo "error making and entering directory" && exit 1
 bash birdcam/install_requirements.sh
 
+cd ~ || exit 1
+
 pip install boto3
 
+#use git clone instead
+git clone https://github.com/shivapal/ai-birdcam.git
 
-#setup autorun that fires scripts
+mkdir ~/BirdcamCustom
+cd ~/BirdcamCustom || exit 1
+
+mv -R ~/ai-birdcam/src/* .
+
+#make autostart, taking in propeties
 #also log info on success in csv for future training
+#do a general log
 #implement some way to zoom (look at roi, region of interest in documentation), like --roi 0.5,0.5,0.5,0.5
+#experiment with other properties
+#make user account
