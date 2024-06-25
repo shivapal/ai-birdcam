@@ -1,0 +1,11 @@
+#!/bin/bash
+
+PROJECT_DIR="$HOME/BirdcamCustom"
+
+source "$PROJECT_DIR/library_functions.sh"
+
+RUN_MODE=$(read_property "$PROJECT_DIR/birdcam.properties" run-mode)
+
+if [ "$RUN_MODE" = "autostart" ]; then
+  bash "$PROJECT_DIR/take_picture.sh" &
+fi

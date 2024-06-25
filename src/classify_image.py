@@ -1,5 +1,5 @@
 # Lint as: python3
-# Copyright 2019 Google LLC
+# Credit to google PyCoral examples, licensed under Apache license Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,6 +49,8 @@ from pycoral.utils.edgetpu import make_interpreter
 
 # import sys
 
+# replace with your own bucket
+bucket_name = 'shivamainbucket'
 
 def main():
     parser = argparse.ArgumentParser(
@@ -171,7 +173,7 @@ def classify_image(scheduler, args, size, interpreter, labels, s3):
         if labels.get(classes[0].id, classes[0].id) != 'background':
             with open(args.input, 'rb') as data:
                 upload_file = 'birdPics/' + datetime.datetime.now().strftime("%H_%M_%S-%m_%d_%y") + 'bird_pic.jpg'
-                s3.Bucket('shivamainbucket').put_object(Key=upload_file, Body=data)
+                s3.Bucket(bucket_name).put_object(Key=upload_file, Body=data)
 
     if args.run_mode == 'oneshot':
         sys.exit(0)

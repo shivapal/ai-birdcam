@@ -78,8 +78,9 @@ mkdir ~/BirdcamCustom
 cd ~/BirdcamCustom || exit 1
 
 mv -R ~/ai-birdcam/src/* .
+mv ~/ai-birdcam/system/wayfire.ini ~/.config/
 
-#make autostart, taking in propeties
+#update this script to include tflite, labels files download from s3
 #also log info on success in csv for future training
 #do a general log
 #implement some way to zoom (look at roi, region of interest in documentation), like --roi 0.5,0.5,0.5,0.5
