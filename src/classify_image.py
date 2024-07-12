@@ -50,7 +50,7 @@ from pycoral.utils.edgetpu import make_interpreter
 # import sys
 
 # replace with your own bucket
-bucket_name = 'shivamainbucket'
+bucket_name = 'shivapicbucket'
 
 def main():
     parser = argparse.ArgumentParser(
@@ -172,7 +172,7 @@ def classify_image(scheduler, args, size, interpreter, labels, s3):
     if len(classes) >= 1:
         if labels.get(classes[0].id, classes[0].id) != 'background':
             with open(args.input, 'rb') as data:
-                upload_file = 'birdPics/' + datetime.datetime.now().strftime("%H_%M_%S-%m_%d_%y") + 'bird_pic.jpg'
+                upload_file = datetime.datetime.now().strftime("%H_%M_%S-%m_%d_%y") + 'bird_pic.jpg'
                 s3.Bucket(bucket_name).put_object(Key=upload_file, Body=data)
 
     if args.run_mode == 'oneshot':

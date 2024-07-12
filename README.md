@@ -48,3 +48,16 @@ Read the setup_bircam.sh script and edit the variables as necessary, then invoke
 In the classify_image.py, change the bucket_name variable to the name of your target s3 bucket \
 Your bird camera is now functional, play with the zoom settings and other configurables to make sure you are getting
 good pictures.
+
+# Setting up a static website to view pictures
+Kudos to this guy, my implementation is heavily based on his solution: \
+https://github.com/rufuspollock/s3-bucket-listing/tree/gh-pages \
+Note: this will require public access to your s3 bucket. \
+If public access blocked for your bucket, go to your Bucket permissions and then edit, then uncheck the box. \
+Add the bucket policy listed in staticWebsite/bucketPolicy.json. Also add the CORS policy listed in CORS.json.\
+In the s3 console, open up properties, and enable static web hosting. Select the Enable radio button for static web 
+hosting, and the Host a static website radio button for Hosting type. Provide index.html as the index document, and 
+press save.\
+Upload the index.html included in this project to the s3 bucket, modifying the bucket name as necessary.
+The static website is now available at http://shivapicbucket.s3-website.us-east-2.amazonaws.com, replacing shivapicbucket
+with the name of your bucket.
